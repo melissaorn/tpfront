@@ -1,9 +1,28 @@
-import React from "react";
-import { FaHeart, FaRegHeart } from "react-icons/fa"; // ❤️ icônes remplies et vides
+import { useState, useEffect } from "react";
+import { FaHeart } from "react-icons/fa";
 
-const Bouquet = ({ bouquet, toggleLike }) => {
+const Bouquet = ({ bouquet, onLike }) => {
+  const [liked, setLiked] = useState(bouquet.liked || false);
+
+  // Mettre à jour l’état local si le parent change
+  useEffect(() => {
+    setLiked(bouquet.liked || false);
+  }, [bouquet.liked]);
+
+  const toggleLike = () => {
+    setLiked(!liked);
+    if (onLike) onLike(bouquet.id);
+  };
+
   return (
-    <div className="card m-3 shadow-sm" style={{ width: "18rem" }}>
+    <div
+      className="card m-3 shadow-sm"
+      style={{
+        width: "18rem",
+        borderRadius: "15px",
+        overflow: "hidden",
+      }}
+    >
       <img
         src={bouquet.image}
         className="card-img-top"
@@ -11,21 +30,20 @@ const Bouquet = ({ bouquet, toggleLike }) => {
         style={{ height: "200px", objectFit: "cover" }}
       />
       <div className="card-body text-center">
-        <h5 className="card-title">{bouquet.nom}</h5>
+        <h5 className="card-title text-danger">{bouquet.nom}</h5>
         <p className="card-text">{bouquet.descr}</p>
         <p className="text-primary fw-bold">{bouquet.prix} DA</p>
 
-        {/* ❤️ Icône de like */}
-        <span
+        {/* Icône de like */}
+        <FaHeart
+          onClick={toggleLike}
           style={{
             cursor: "pointer",
+            color: liked ? "red" : "lightgray",
             fontSize: "1.8rem",
-            color: bouquet.liked ? "red" : "gray",
+            transition: "color 0.3s",
           }}
-          onClick={() => toggleLike(bouquet.id)}
-        >
-          {bouquet.liked ? <FaHeart /> : <FaRegHeart />}
-        </span>
+        />
       </div>
     </div>
   );
