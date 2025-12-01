@@ -13,6 +13,7 @@ export const sendLike = async (id) => {
   try {
     await myFetch(`/bouquets/${id}/like`, {
       method: "POST",
+      credentials: "include",
     });
     console.log(`Like envoyé pour le bouquet ${id}`);
   } catch (err) {

@@ -4,34 +4,32 @@ import { myFetch } from "../comm/myFetch";
 const MonCompte = () => {
   const [users, setUsers] = useState([]);
 
-  const loadUsers = async () => {
-    try {
-      const data = await myFetch("/users");
-      setUsers(data);
-    } catch (err) {
-      console.error("Erreur chargement users :", err);
-    }
-  };
-
   useEffect(() => {
+    // The loadUsers function doesn't need 'id' as an argument
+    const loadUsers = async () => {
+      try {
+        const data = await myFetch(`/auth/me`, { method: "GET", credentials: "include" });
+        console.log("users: ", data);
+        setUsers(data.user);
+      } catch (err) {
+        console.error("Erreur chargement users :", err);
+      }
+    };
+    
+    // Call the function to load users
     loadUsers();
+    
+    // Empty dependency array ensures it runs only once on mount
   }, []);
 
   return (
     <div className="container">
       <h2 className="text-center text-primary mb-4">Utilisateurs</h2>
-
-      <div className="d-flex flex-column align-items-center">
-        {users.map(u => (
-          <div
-            key={u.id}
-            className="card m-2 p-3 shadow"
-            style={{ width: "350px" }}
-          >
-            <h5>Nom complet : {u.fullname}</h5>
-            <p>Login : {u.login}</p>
+      <div>
+          <div key={users.email || users.id}>
+            <p>Login : {users.email}</p>
+            <h5>Nom complet : {users.username}</h5>
           </div>
-        ))}
       </div>
     </div>
   );

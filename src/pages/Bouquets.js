@@ -16,6 +16,7 @@ export default function Bouquets() {
     try {
       const res = await fetch(`http://localhost:3001/bouquets/${id}/like`, {
         method: "POST",
+        credentials: "include",
       });
 
       const updatedBouquet = await res.json();

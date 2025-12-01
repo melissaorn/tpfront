@@ -15,6 +15,8 @@ const Bouquet = ({ bouquet, onLike }) => (
 
       <FaHeart
         onClick={() => onLike(bouquet.id)}
+        {...console.log("Bouquet likes:", bouquet.id)}
+        
         style={{ cursor: "pointer", color: bouquet.liked ? "red" : "lightgray", fontSize: "1.8rem", transition: "color 0.3s" }}
       />
       <p className="mt-1">{bouquet.likes || 0} likes</p>

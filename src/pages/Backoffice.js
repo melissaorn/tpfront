@@ -1,14 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function Backoffice() {
   const [nom, setNom] = useState("");
   const [descr, setDescr] = useState("");
   const [image, setImage] = useState("");
-
   const [nbFleurs, setNbFleurs] = useState(1);
-
   const [flowerName, setFlowerName] = useState("");
   const [draft, setDraft] = useState(null);
+
+  // ➤ Charger le brouillon existant au chargement
+  useEffect(() => {
+    const fetchDraft = async () => {
+      const res = await fetch("http://localhost:3001/backoffice/bouquet/draft", {
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (data.draft) {
+        setDraft(data.draft);
+        setNom(data.draft.nom);
+        setDescr(data.draft.descr);
+        setImage(data.draft.image);
+        setNbFleurs(data.draft.nbFleurs);
+      }
+    };
+    fetchDraft();
+  }, []);
 
   // ➤ 1) Démarrer le brouillon
   const startDraft = async () => {
@@ -25,6 +41,8 @@ export default function Backoffice() {
 
   // ➤ 2) Ajouter une fleur
   const addFlower = async () => {
+    if (!flowerName.trim()) return;
+
     const res = await fetch("http://localhost:3001/backoffice/bouquet/add-flower", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -34,17 +52,23 @@ export default function Backoffice() {
 
     const data = await res.json();
     setDraft(data.draft);
+    setFlowerName("");
   };
 
   // ➤ 3) Finaliser
   const finishBouquet = async () => {
-    await fetch("http://localhost:3001/backoffice/bouquet/finish", {
+    const res = await fetch("http://localhost:3001/backoffice/bouquet/finish", {
       method: "POST",
       credentials: "include",
     });
 
+    const data = await res.json();
     alert("Bouquet créé !");
     setDraft(null);
+    setNom("");
+    setDescr("");
+    setImage("");
+    setNbFleurs(1);
   };
 
   return (
