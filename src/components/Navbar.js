@@ -1,11 +1,17 @@
 import { Link, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useSelector, useDispatch } from "react-redux";
+import { clearUser } from "../store/userSlice";
 
-const Navbar = ({ user }) => {
+const Navbar = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // On récupère les infos depuis Redux
+  const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
 
   const logout = () => {
-    localStorage.removeItem("user");
+    dispatch(clearUser()); // ⬅️ suppression dans Redux
     navigate("/login");
   };
 
@@ -16,9 +22,9 @@ const Navbar = ({ user }) => {
   ];
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark" style={{ backgroundColor: "#ff4da6" }}>
+    <nav className="navbar navbar-expand-lg navbar-dark" style={{ backgroundColor: "#1f1218ff" }}>
       <div className="container-fluid">
-        <Link className="navbar-brand" to="/home">flower</Link>
+        <Link className="navbar-brand" to="/home">Flower</Link>
 
         <div className="collapse navbar-collapse">
           <ul className="navbar-nav ms-auto">
@@ -29,8 +35,10 @@ const Navbar = ({ user }) => {
             ))}
 
             {/* SI CONNECTÉ */}
-            {user && (
+            {isAuthenticated && (
               <>
+                
+
                 <li className="nav-item">
                   <Link className="nav-link" to="/moncompte">Mon Compte</Link>
                 </li>
@@ -46,7 +54,7 @@ const Navbar = ({ user }) => {
             )}
 
             {/* SI NON CONNECTÉ */}
-            {!user && (
+            {!isAuthenticated && (
               <>
                 <li className="nav-item">
                   <Link className="nav-link" to="/login">Se connecter</Link>
