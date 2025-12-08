@@ -8,7 +8,6 @@ export default function Backoffice() {
   const [flowerName, setFlowerName] = useState("");
   const [draft, setDraft] = useState(null);
 
-  // ➤ Charger le brouillon existant au chargement
   useEffect(() => {
     const fetchDraft = async () => {
       const res = await fetch("http://localhost:3001/backoffice/bouquet/draft", {
@@ -26,7 +25,6 @@ export default function Backoffice() {
     fetchDraft();
   }, []);
 
-  // ➤ 1) Démarrer le brouillon
   const startDraft = async () => {
     const res = await fetch("http://localhost:3001/backoffice/bouquet/start", {
       method: "POST",
@@ -39,7 +37,6 @@ export default function Backoffice() {
     setDraft(data.draft);
   };
 
-  // ➤ 2) Ajouter une fleur
   const addFlower = async () => {
     if (!flowerName.trim()) return;
 
@@ -55,7 +52,6 @@ export default function Backoffice() {
     setFlowerName("");
   };
 
-  // ➤ 3) Finaliser
   const finishBouquet = async () => {
     const res = await fetch("http://localhost:3001/backoffice/bouquet/finish", {
       method: "POST",
@@ -71,52 +67,116 @@ export default function Backoffice() {
     setNbFleurs(1);
   };
 
+  const inputStyle = {
+    padding: "8px",
+    margin: "5px 0 15px 0",
+    width: "100%",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
+    fontSize: "14px",
+  };
+
+  const buttonStyle = {
+    padding: "10px 20px",
+    margin: "10px 5px 20px 0",
+    borderRadius: "5px",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "14px",
+    backgroundColor: "#4CAF50",
+    color: "#fff",
+    transition: "background-color 0.3s",
+  };
+
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Backoffice - Ajouter un bouquet</h1>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        padding: "40px",
+        fontFamily: "Arial, sans-serif",
+      }}
+    >
+      {/* Card centrée */}
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "500px",
+          padding: "30px",
+          borderRadius: "10px",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          backgroundColor: "#f9f9f9",
+        }}
+      >
+        <h1 style={{ textAlign: "center", marginBottom: "20px" }}>
+         Ajouter un bouquet
+        </h1>
 
-      <h3>Nom</h3>
-      <input value={nom} onChange={(e) => setNom(e.target.value)} />
+        <h3>Nom</h3>
+        <input style={inputStyle} value={nom} onChange={(e) => setNom(e.target.value)} />
 
-      <h3>Description</h3>
-      <input value={descr} onChange={(e) => setDescr(e.target.value)} />
+        <h3>Description</h3>
+        <input style={inputStyle} value={descr} onChange={(e) => setDescr(e.target.value)} />
 
-      <h3>Image (/img/...)</h3>
-      <input value={image} onChange={(e) => setImage(e.target.value)} />
+        <h3>Image (/img/...)</h3>
+        <input style={inputStyle} value={image} onChange={(e) => setImage(e.target.value)} />
 
-      <h3>Nombre total de fleurs</h3>
-      <input
-        type="number"
-        value={nbFleurs}
-        onChange={(e) => setNbFleurs(e.target.value)}
-      />
+        <h3>Nombre total de fleurs</h3>
+        <input
+          style={inputStyle}
+          type="number"
+          value={nbFleurs}
+          onChange={(e) => setNbFleurs(e.target.value)}
+        />
 
-      <br /><br />
-      <button onClick={startDraft}>📌 Démarrer Brouillon</button>
+        <button
+          style={buttonStyle}
+          onMouseOver={(e) => (e.target.style.backgroundColor = "#45a049")}
+          onMouseOut={(e) => (e.target.style.backgroundColor = "#4CAF50")}
+          onClick={startDraft}
+        >
+          📌 Démarrer Brouillon
+        </button>
 
-      {draft && (
-        <>
-          <hr />
-          <h2>Ajouter les fleurs</h2>
+        {draft && (
+          <>
+            <hr />
+            <h2>Ajouter les fleurs</h2>
 
-          <input
-            placeholder="Nom de la fleur"
-            value={flowerName}
-            onChange={(e) => setFlowerName(e.target.value)}
-          />
+            <input
+              style={inputStyle}
+              placeholder="Nom de la fleur"
+              value={flowerName}
+              onChange={(e) => setFlowerName(e.target.value)}
+            />
 
-          <button onClick={addFlower}>Ajouter</button>
+            <button
+              style={buttonStyle}
+              onMouseOver={(e) => (e.target.style.backgroundColor = "#45a049")}
+              onMouseOut={(e) => (e.target.style.backgroundColor = "#4CAF50")}
+              onClick={addFlower}
+            >
+              Ajouter
+            </button>
 
-          <h3>Fleurs ajoutées :</h3>
-          <ul>
-            {draft.fleurs.map((f, i) => (
-              <li key={i}>{f.nom}</li>
-            ))}
-          </ul>
+            <h3>Fleurs ajoutées :</h3>
+            <ul>
+              {draft.fleurs.map((f, i) => (
+                <li key={i}>{f.nom}</li>
+              ))}
+            </ul>
 
-          <button onClick={finishBouquet}>✅ Finaliser le bouquet</button>
-        </>
-      )}
+            <button
+              style={{ ...buttonStyle, backgroundColor: "#008CBA" }}
+              onMouseOver={(e) => (e.target.style.backgroundColor = "#007bb5")}
+              onMouseOut={(e) => (e.target.style.backgroundColor = "#008CBA")}
+              onClick={finishBouquet}
+            >
+              ✅ Finaliser le bouquet
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 }

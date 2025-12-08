@@ -16,7 +16,7 @@ const Navbar = ({ user }) => {
   ];
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark" style={{ backgroundColor: "#ff4da6" }}>
+    <nav className="navbar navbar-expand-lg navbar-dark" style={{ backgroundColor: "#000" }}>
       <div className="container-fluid">
         <Link className="navbar-brand" to="/home">flower</Link>
 

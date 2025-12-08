@@ -25,7 +25,8 @@ function App() {
 
       <Routes>
         <Route path="/home" element={<Home />} />
-        <Route path="/bouquets" element={<Bouquets />} />
+       <Route path="/bouquets" element={<Bouquets user={user} />} />
+
         <Route path="/fleurs" element={<Fleurs />} />
         <Route path="/backoffice" element={<Backoffice />} />
         <Route path="/moncompte" element={<MonCompte user={user} />} />

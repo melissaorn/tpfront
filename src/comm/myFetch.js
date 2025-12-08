@@ -6,10 +6,18 @@ export const myFetch = async (url, options = {}) => {
 
   if (useAxios) {
     const method = options.method || "GET";
-    const res = await axios({ url: fullUrl, method, ...options });
+    const res = await axios({
+      url: fullUrl,
+      method,
+      withCredentials: true, // très important pour la session
+      ...options,
+    });
     return res.data;
   } else {
-    const res = await fetch(fullUrl, options);
+    const res = await fetch(fullUrl, {
+      credentials: "include", // très important pour la session
+      ...options,
+    });
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     return res.json();
   }

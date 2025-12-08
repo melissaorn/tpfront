@@ -1,75 +1,135 @@
 import React, { useEffect, useState } from "react";
+import { myFetch } from "../comm/myFetch";
 
-export default function Bouquets() {
+export default function Bouquets({ user }) {
   const [bouquets, setBouquets] = useState([]);
+  const [selectedLikers, setSelectedLikers] = useState(null); // bouquet sélectionné pour voir les likers
 
-  // Charger les bouquets
   useEffect(() => {
-    fetch("http://localhost:3001/bouquets")
-      .then((res) => res.json())
-      .then((data) => setBouquets(data))
-      .catch((err) => console.error(err));
+    const fetchBouquets = async () => {
+      try {
+        const data = await myFetch("/bouquets", {
+          method: "GET",
+          credentials: "include",
+        });
+        setBouquets(data);
+      } catch (err) {
+        console.error("Erreur lors du chargement des bouquets:", err);
+      }
+    };
+    fetchBouquets();
   }, []);
 
-  // LIKE
   const likeBouquet = async (id) => {
+    if (!user) return;
     try {
-      const res = await fetch(`http://localhost:3001/bouquets/${id}/like`, {
+      const updatedBouquet = await myFetch(`/bouquets/${id}/like`, {
         method: "POST",
         credentials: "include",
       });
-
-      const updatedBouquet = await res.json();
-
-      // Mettre à jour localement
       setBouquets((prev) =>
         prev.map((b) => (b.id === id ? updatedBouquet : b))
       );
-    } catch (e) {
-      console.error("Erreur like :", e);
+    } catch (err) {
+      console.error("Erreur lors du like:", err);
     }
   };
+
+  const showLikers = (bouquet) => {
+    setSelectedLikers(bouquet.likers); // ouvrir le modal avec la liste des likers
+  };
+
+  const closeLikers = () => setSelectedLikers(null);
 
   return (
     <div>
       <h1>Liste des Bouquets</h1>
-
       <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-        {bouquets.map((b) => (
-          <div
-            key={b.id}
-            style={{
-              border: "1px solid #ccc",
-              padding: "10px",
-              width: "200px",
-              borderRadius: "10px",
-            }}
-          >
-            {/* ✔ NE TOUCHE PAS À L’URL, ELLE MARCHAIT AVANT */}
-            <img
-              src={`http://localhost:3001${b.image}`}
-              alt={b.nom}
-              style={{ width: "100%", borderRadius: "10px" }}
-            />
-
-            <h3>{b.nom}</h3>
-            <p>{b.descr}</p>
-
-            <button
-              onClick={() => likeBouquet(b.id)}
+        {bouquets.map((b) => {
+          const liked = user ? b.liked : false;
+          return (
+            <div
+              key={b.id}
               style={{
-                background: "white",
-                border: "1px solid red",
-                borderRadius: "8px",
-                padding: "5px",
-                cursor: "pointer",
+                border: "1px solid #ccc",
+                padding: "10px",
+                width: "200px",
+                borderRadius: "10px",
               }}
             >
-              ❤️ {b.likes}
-            </button>
-          </div>
-        ))}
+              <img
+                src={`http://localhost:3001${b.image}`}
+                alt={b.nom}
+                style={{ width: "100%", borderRadius: "10px" }}
+              />
+              <h3>{b.nom}</h3>
+              <p>{b.descr}</p>
+              <button
+                onClick={() => likeBouquet(b.id)}
+                style={{
+                  background: "white",
+                  color: liked ? "red" : "gray",
+                  border: `1px solid ${liked ? "red" : "gray"}`,
+                  borderRadius: "8px",
+                  padding: "5px",
+                  cursor: user ? "pointer" : "not-allowed",
+                  fontWeight: "bold",
+                }}
+                disabled={!user}
+              >
+                ❤️ {b.likes || 0}
+              </button>
+              {b.likes > 0 && (
+                <p
+                  style={{ cursor: "pointer", textDecoration: "underline", color: "blue" }}
+                  onClick={() => showLikers(b)}
+                >
+                  Voir {b.likes} like{b.likes > 1 ? "s" : ""}
+                </p>
+              )}
+            </div>
+          );
+        })}
       </div>
+
+      {/* Modal pour afficher les likers */}
+      {selectedLikers && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            background: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+          }}
+          onClick={closeLikers}
+        >
+          <div
+            style={{
+              background: "white",
+              padding: "20px",
+              borderRadius: "10px",
+              minWidth: "300px",
+              maxHeight: "400px",
+              overflowY: "auto",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3>Utilisateurs ayant liké :</h3>
+            <ul>
+              {selectedLikers.map((u) => (
+                <li key={u.id}>{u.username}</li>
+              ))}
+            </ul>
+            <button onClick={closeLikers}>Fermer</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
