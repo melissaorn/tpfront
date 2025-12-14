@@ -22,33 +22,44 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark" style={{ backgroundColor: "#1f1218ff" }}>
+    <nav
+      className="navbar navbar-expand-lg navbar-dark"
+      style={{ backgroundColor: "#728ec7ff" }}
+    >
       <div className="container-fluid">
-        <Link className="navbar-brand" to="/home">Flower</Link>
+        <Link className="navbar-brand" to="/home">
+          FLEURS
+        </Link>
 
         <div className="collapse navbar-collapse">
           <ul className="navbar-nav ms-auto">
-            {menu.map(item => (
+            {menu.map((item) => (
               <li key={item.url} className="nav-item">
-                <Link className="nav-link" to={item.url}>{item.label}</Link>
+                <Link className="nav-link" to={item.url}>
+                  {item.label}
+                </Link>
               </li>
             ))}
 
             {/* SI CONNECTÉ */}
             {isAuthenticated && (
               <>
-                
-
                 <li className="nav-item">
-                  <Link className="nav-link" to="/moncompte">Mon Compte</Link>
+                  <Link className="nav-link" to="/moncompte">
+                    Mon Compte
+                  </Link>
                 </li>
 
                 <li className="nav-item">
-                  <Link className="nav-link" to="/backoffice">Backoffice</Link>
+                  <Link className="nav-link" to="/backoffice">
+                    Backoffice
+                  </Link>
                 </li>
 
                 <li className="nav-item">
-                  <button className="btn btn-light ms-2" onClick={logout}>Déconnexion</button>
+                  <button className="btn btn-light ms-2" onClick={logout}>
+                    Déconnexion
+                  </button>
                 </li>
               </>
             )}
@@ -57,10 +68,14 @@ const Navbar = () => {
             {!isAuthenticated && (
               <>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/login">Se connecter</Link>
+                  <Link className="nav-link" to="/login">
+                    Se connecter
+                  </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/register">Créer un compte</Link>
+                  <Link className="nav-link" to="/register">
+                    Créer un compte
+                  </Link>
                 </li>
               </>
             )}
