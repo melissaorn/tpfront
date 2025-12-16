@@ -1,33 +1,55 @@
 import { useEffect, useState } from "react";
 import { myFetch } from "../comm/myFetch";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const MonCompte = () => {
+  const navigate = useNavigate();
+
+  // 🔐 token depuis Redux
+  const token = useSelector((state) => state.user.token);
+
   const [user, setUser] = useState(null);
   const [tab, setTab] = useState("profil");
   const [mesBouquets, setMesBouquets] = useState([]);
-  const navigate = useNavigate();
 
+  // ===============================
+  // CHARGER UTILISATEUR CONNECTÉ
+  // ===============================
   useEffect(() => {
     const loadUser = async () => {
-      const data = await myFetch("/auth/me");
-      setUser(data.user);
+      try {
+        const data = await myFetch("/auth/me", {}, token);
+        setUser(data.user);
+      } catch (err) {
+        navigate("/login");
+      }
     };
-    loadUser();
-  }, []);
 
+    if (token) loadUser();
+  }, [token, navigate]);
+
+  // ===============================
+  // CHARGER MES BOUQUETS
+  // ===============================
   const loadMesBouquets = async () => {
-    const data = await myFetch("/bouquets/mine");
+    const data = await myFetch("/bouquets/mine", {}, token);
     setMesBouquets(data);
   };
 
+  // ===============================
+  // SUPPRIMER BOUQUET
+  // ===============================
   const deleteBouquet = async (id) => {
     if (!window.confirm("Supprimer ce bouquet ?")) return;
-    await myFetch(`/bouquets/bouquet/${id}`, { method: "DELETE" });
+
+    await myFetch(`/bouquets/${id}`, { method: "DELETE" }, token);
     loadMesBouquets();
   };
 
-  if (!user) return <h3 className="text-center mt-5">Chargement...</h3>;
+  if (!user) {
+    return <h3 className="text-center mt-5">Chargement...</h3>;
+  }
 
   return (
     <div style={{ padding: "20px" }}>
@@ -50,6 +72,7 @@ const MonCompte = () => {
         >
           Profil
         </button>
+
         <button
           className={`btn ${
             tab === "bouquets" ? "btn-primary" : "btn-outline-primary"
@@ -78,7 +101,7 @@ const MonCompte = () => {
         </div>
       )}
 
-      {/* MES BOUQUETS (STYLE IDENTIQUE À /BOUQUETS) */}
+      {/* MES BOUQUETS */}
       {tab === "bouquets" && (
         <div
           style={{
@@ -113,7 +136,6 @@ const MonCompte = () => {
                 <p style={{ textAlign: "center" }}>{b.descr}</p>
               </div>
 
-              {/* ACTIONS */}
               <div
                 style={{
                   display: "flex",

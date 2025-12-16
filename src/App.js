@@ -32,6 +32,7 @@ function App() {
         <Route path="/backoffice" element={<Backoffice />} />
         <Route path="/moncompte" element={<MonCompte />} />
         <Route path="/modifier-bouquet/:id" element={<ModifierBouquet />} />
+            
 
         {/* Login & Register */}
         <Route path="/login" element={<Login />} />

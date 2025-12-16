@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { myFetch } from "../comm/myFetch";
 
 const ModifierBouquet = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const token = useSelector((state) => state.user.token);
 
   const [form, setForm] = useState({
     nom: "",
@@ -31,13 +33,17 @@ const ModifierBouquet = () => {
   const submit = async (e) => {
     e.preventDefault();
 
-    await myFetch(`/bouquets/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json", // 🔥 OBLIGATOIRE
+    await myFetch(
+      `/bouquets/${id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
       },
-      body: JSON.stringify(form),
-    });
+      token // ✅ JWT
+    );
 
     alert("Bouquet modifié");
     navigate("/mon-compte");

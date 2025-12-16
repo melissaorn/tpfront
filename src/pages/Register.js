@@ -1,7 +1,10 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -14,16 +17,15 @@ export default function Register() {
 
   const submit = async (e) => {
     e.preventDefault();
+
     try {
-      const res = await axios.post(
-        "http://localhost:3001/auth/register",
-        form,
-        { withCredentials: true }
-      );
-      alert("Compte créé !");
+      await axios.post("http://localhost:3001/auth/register", form);
+
+      alert("✅ Compte créé avec succès !");
+      navigate("/login"); // 🔁 redirection normale
     } catch (err) {
-      console.log(err);
-      alert("Erreur côté backend");
+      console.error("Erreur register :", err);
+      alert("❌ Erreur lors de la création du compte");
     }
   };
 
@@ -45,24 +47,14 @@ export default function Register() {
         name="username"
         placeholder="Login"
         onChange={handleChange}
-        style={{
-          marginBottom: "12px",
-          padding: "10px",
-          borderRadius: "8px",
-          border: "1px solid #7ec8e3",
-        }}
+        style={inputStyle}
       />
 
       <input
         name="email"
         placeholder="Email"
         onChange={handleChange}
-        style={{
-          marginBottom: "12px",
-          padding: "10px",
-          borderRadius: "8px",
-          border: "1px solid #7ec8e3",
-        }}
+        style={inputStyle}
       />
 
       <input
@@ -70,40 +62,37 @@ export default function Register() {
         type="password"
         placeholder="Mot de passe"
         onChange={handleChange}
-        style={{
-          marginBottom: "12px",
-          padding: "10px",
-          borderRadius: "8px",
-          border: "1px solid #7ec8e3",
-        }}
+        style={inputStyle}
       />
 
       <input
         name="fullName"
         placeholder="Nom complet"
         onChange={handleChange}
-        style={{
-          marginBottom: "12px",
-          padding: "10px",
-          borderRadius: "8px",
-          border: "1px solid #7ec8e3",
-        }}
+        style={inputStyle}
       />
 
-      <button
-        style={{
-          padding: "10px",
-          borderRadius: "8px",
-          border: "none",
-          backgroundColor: "#7ec8e3",
-          color: "white",
-          fontWeight: "bold",
-          cursor: "pointer",
-          marginTop: "10px",
-        }}
-      >
-        Créer compte
-      </button>
+      <button style={btnStyle}>Créer compte</button>
     </form>
   );
 }
+
+/* ================= STYLES ================= */
+
+const inputStyle = {
+  marginBottom: "12px",
+  padding: "10px",
+  borderRadius: "8px",
+  border: "1px solid #7ec8e3",
+};
+
+const btnStyle = {
+  padding: "10px",
+  borderRadius: "8px",
+  border: "none",
+  backgroundColor: "#7ec8e3",
+  color: "white",
+  fontWeight: "bold",
+  cursor: "pointer",
+  marginTop: "10px",
+};

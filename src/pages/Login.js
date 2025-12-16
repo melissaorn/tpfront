@@ -1,10 +1,13 @@
 import { useState } from "react";
-import axios from "axios";
-import { useDispatch } from "react-redux";
-import { setUser } from "../store/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../store/userSlice";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const { loading } = useSelector((state) => state.user);
 
   const [form, setForm] = useState({
     username: "",
@@ -18,12 +21,9 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:3001/auth/login", form, {
-        withCredentials: true,
-      });
-
-      dispatch(setUser(res.data.user));
+      await dispatch(login(form)).unwrap();
       alert("Connecté !");
+      navigate("/"); // retour à l'accueil
     } catch (err) {
       alert("Login ou mot de passe incorrect");
       console.error("Erreur login :", err);
@@ -40,13 +40,14 @@ export default function Login() {
         margin: "50px auto",
         padding: "20px",
         borderRadius: "12px",
-        backgroundColor: "#e3f3ff", // bleu ciel très clair
+        backgroundColor: "#e3f3ff",
         boxShadow: "0 3px 10px rgba(0,0,0,0.1)",
       }}
     >
       <input
         name="username"
         placeholder="Login"
+        value={form.username}
         onChange={handleChange}
         style={{
           marginBottom: "15px",
@@ -60,6 +61,7 @@ export default function Login() {
         name="password"
         type="password"
         placeholder="Mot de passe"
+        value={form.password}
         onChange={handleChange}
         style={{
           marginBottom: "15px",
@@ -70,17 +72,19 @@ export default function Login() {
       />
 
       <button
+        disabled={loading}
         style={{
           padding: "10px",
           borderRadius: "8px",
           border: "none",
-          backgroundColor: "#7ec8e3", // bleu ciel
+          backgroundColor: "#7ec8e3",
           color: "white",
           fontWeight: "bold",
           cursor: "pointer",
+          opacity: loading ? 0.6 : 1,
         }}
       >
-        Connexion
+        {loading ? "Connexion..." : "Connexion"}
       </button>
     </form>
   );
